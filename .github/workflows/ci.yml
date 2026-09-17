@@ -53,9 +53,6 @@ jobs:
           images: ghcr.io/${{ github.repository }}/${{ matrix.image }}
           tags: |
             type=raw,value=${{ matrix.ros_distro }}
-            type=raw,value=${{ matrix.ros_distro }}-{{date 'YYYYMMDD'}}-{{sha}}
-            type=ref,event=tag
-            type=raw,value=latest,enable={{is_default_branch}}
           flavor: |
             latest=false
 

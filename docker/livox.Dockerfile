@@ -10,8 +10,10 @@ ENV DEBIAN_FRONTEND=noninteractive \
     ROS_DISTRO=${ROS_DISTRO}
 
 # System deps (minimal — ROS deps come via rosdep, matching upstream Livox docs)
-# Upstream Livox SDK2 only needs cmake + gcc; livox_ros_driver2 deps are resolved via rosdep
-RUN apt-get update && apt-get install -y --no-install-recommends \
+# Caches apt lists to speed up rebuilds (slow campus DNS) and avoids 10h QEMU arm64 slowness for local builds (use single-arch locally)
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    apt-get update && apt-get install -y --no-install-recommends \
     cmake \
     build-essential \
     libpcl-dev \
@@ -19,20 +21,18 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libaprutil1-dev \
     python3-colcon-common-extensions \
     python3-rosdep \
-    && rm -rf /var/lib/apt/lists/* \
- && (apt-get update && apt-get install -y --no-install-recommends \
+ && (apt-get install -y --no-install-recommends \
     ros-${ROS_DISTRO}-rmw-zenoh-cpp \
     ros-${ROS_DISTRO}-pcl-conversions \
     ros-${ROS_DISTRO}-pcl-msgs \
     ros-${ROS_DISTRO}-ament-cmake-auto \
     ros-${ROS_DISTRO}-rosidl-default-generators \
     ros-${ROS_DISTRO}-rclcpp-components \
-    || echo "some ros packages not available for ${ROS_DISTRO}, will rely on rosdep") \
- && rm -rf /var/lib/apt/lists/*
+    || echo "some ros packages not available for ${ROS_DISTRO}, will rely on rosdep")
 
 # --- Build Livox SDK2 ---
 COPY sdk/livox_sdk /tmp/livox_sdk
-RUN cmake -S /tmp/livox_sdk -B /tmp/livox_build -DCMAKE_BUILD_TYPE=Release \
+RUN cmake -S /tmp/livox_sdk -B /tmp/livox_build -DCMAKE_BUILD_TYPE=Release -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
  && cmake --build /tmp/livox_build -j$(nproc) \
  && cmake --install /tmp/livox_build \
  && rm -rf /tmp/livox_build /tmp/livox_sdk
@@ -44,11 +44,13 @@ COPY src/livox_ros /ws/src/livox_ros
 # Ensure package.xml matches ROS2 (handled by build.sh logic, but we do it explicitly)
 RUN if [ -f /ws/src/livox_ros/package_ROS2.xml ]; then cp /ws/src/livox_ros/package_ROS2.xml /ws/src/livox_ros/package.xml; fi
 
-# Resolve rosdep + colcon build
-RUN . /opt/ros/${ROS_DISTRO}/setup.sh \
+# Resolve rosdep + colcon build — use cache mount for colcon build to avoid re-downloading deps
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    . /opt/ros/${ROS_DISTRO}/setup.sh \
  && rosdep update || true \
  && rosdep install --from-paths src --ignore-src -r -y --rosdistro ${ROS_DISTRO} || echo "rosdep install had issues (non-fatal)" \
- && colcon build --cmake-args -DROS_EDITION=ROS2 -DDISTRO_ROS=${ROS_DISTRO} -DCMAKE_BUILD_TYPE=Release
+ && colcon build --cmake-args -DROS_EDITION=ROS2 -DDISTRO_ROS=${ROS_DISTRO} -DCMAKE_BUILD_TYPE=Release -DCMAKE_POLICY_VERSION_MINIMUM=3.5
 
 # Runtime env
 COPY docker/entrypoint-livox.sh /entrypoint-livox.sh
