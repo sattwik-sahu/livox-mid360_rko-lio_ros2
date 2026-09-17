@@ -20,7 +20,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     python3-colcon-common-extensions \
     python3-rosdep \
     && rm -rf /var/lib/apt/lists/* \
- && (apt-get update && apt-get install -y --no-install-recommends ros-${ROS_DISTRO}-rmw-zenoh-cpp || echo "rmw_zenoh not available for ${ROS_DISTRO}, relying on DDS or manual install") \
+ && (apt-get update && apt-get install -y --no-install-recommends \
+    ros-${ROS_DISTRO}-rmw-zenoh-cpp \
+    ros-${ROS_DISTRO}-pcl-conversions \
+    ros-${ROS_DISTRO}-pcl-msgs \
+    ros-${ROS_DISTRO}-ament-cmake-auto \
+    ros-${ROS_DISTRO}-rosidl-default-generators \
+    ros-${ROS_DISTRO}-rclcpp-components \
+    || echo "some ros packages not available for ${ROS_DISTRO}, will rely on rosdep") \
  && rm -rf /var/lib/apt/lists/*
 
 # --- Build Livox SDK2 ---
