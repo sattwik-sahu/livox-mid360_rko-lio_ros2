@@ -13,7 +13,7 @@ permalink: /references/
 - **User manual & quick start**: [livoxtech.com/mid-360/downloads](https://www.livoxtech.com/mid-360/downloads) — wiring, static IP `192.168.1.1XX`.
 - **Communication protocol**: [livox_wiki_en — Mid360](https://github.com/Livox-SDK/livox_wiki_en/blob/master/source/tutorials/new_product/mid360/livox_eth_protocol_mid360.md) — UDP ports `56100` cmd, `56200` push, `56300` pointcloud, `56400` imu, `56500` log.
 - **Livox SDK2**: [Livox-SDK/Livox-SDK2](https://github.com/Livox-SDK/Livox-SDK2) — build `cmake .. && make && sudo make install`.
-- **livox_ros_driver2**: [Livox-SDK/livox_ros_driver2](https://github.com/Livox-SDK/livox_ros_driver2) — ROS/ROS2 driver, `config/MID360_config.json`, launch `msg_MID360_launch.py` (`xfer_format`, `publish_freq`), Rviz configs.
+- **livox_ros_driver2**: [Livox-SDK/livox_ros_driver2](https://github.com/Livox-SDK/livox_ros_driver2) — ROS/ROS2 driver, `config/livox/MID360_config.json`, launch `msg_MID360_launch.py` (`xfer_format`, `publish_freq`), Rviz configs.
 - **Docker example (Jetson)**: [patrick-darbin-orica/Livox-mid360-docker](https://github.com/patrick-darbin-orica/Livox-mid360-docker) — static IP + `ufw allow 56100:56500/udp`.
 
 ## RKO-LIO

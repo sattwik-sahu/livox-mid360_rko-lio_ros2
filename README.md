@@ -21,13 +21,14 @@ Two-container ROS 2 stack for the **Livox Mid360** 3D lidar:
 |-----------|-------|--------------|
 | `livox-driver` | `ghcr.io/sattwik-sahu/livox-mid360_rko-lio_ros2/livox-driver:{distro}` | `livox_ros_driver2` SDK2 + ROS2 driver (publishes `/livox/lidar`, `/livox/imu`) |
 | `rko-lio` | `ghcr.io/sattwik-sahu/livox-mid360_rko-lio_ros2/rko-lio:{distro}` | `PRBonn/rko_lio` LiDAR-inertial odometry (subscribes to driver topics, publishes `/odom`, `/tf`, map) |
-| `zenoh-router` | `ros:{distro}-ros-base` (ephemeral) | `rmw_zenohd` — Zenoh router required for `rmw_zenoh_cpp` discovery |
+
+> **Zenoh:** A Zenoh router is expected to be running **outside** this compose (your `pixi` project). The containers only set `RMW_IMPLEMENTATION=rmw_zenoh_cpp` and connect to it — no extra Docker setup.
 
 All images are **multi-arch** (`linux/amd64`, `linux/arm64`) — build on Linux, `docker pull` on Mac Mini `osx-arm64` works transparently.
 
 ---
 
-## Quick start (Linux)
+## Quick start
 
 ```bash
 git clone https://github.com/sattwik-sahu/livox-mid360_rko-lio_ros2.git
@@ -35,15 +36,17 @@ cd livox-mid360_rko-lio_ros2
 cp .env.example .env        # edit HOST_IP / LIDAR_IP / ROS_DISTRO
 # 1) Host network (LiDAR is static IP only)
 sudo ./scripts/setup_host_network.sh eth0 192.168.1.5 192.168.1.12
-# 2) Start everything (Zenoh + driver + RKO-LIO)
+# 2) Start Zenoh router separately (your pixi project), e.g.:
+#    pixi run zenoh-router  # or: ros2 run rmw_zenoh_cpp rmw_zenohd
+# 3) Start driver + RKO-LIO
 docker compose up -d
 docker compose logs -f
-# 3) Verify
+# 4) Verify
 docker compose exec livox-driver ros2 topic list | grep livox
 docker compose exec rko-lio ros2 topic list | grep odom
 ```
 
-**Mac Mini (osx-arm64)**: `docker compose -f docker-compose.yml -f docker-compose.mac.yml up -d` — see [docs/tutorial.md](https://sattwik-sahu.github.io/livox-mid360_rko-lio_ros2/tutorial/) for bridge-mode caveats (Docker Desktop has no `host` networking; OrbStack/Colima recommended).
+Works on both Linux and Mac Mini (`osx-arm64`) with `network_mode: host`.
 
 > **Wizard:** pick your OS / Arch / ROS distro at **[Setup Wizard](https://sattwik-sahu.github.io/livox-mid360_rko-lio_ros2/setup-wizard/)** — commands update live.
 
@@ -71,14 +74,13 @@ docker compose pull   # respects ROS_DISTRO from .env
 ```mermaid
 flowchart LR
   LIDAR[(Livox Mid360<br/>192.168.1.12<br/>UDP 56100-56500)] -->|UDP pointcloud+imu| DRIVER[livox-driver<br/>livox_ros_driver2]
-  DRIVER -->|/livox/lidar /livox/imu<br/>Zenoh 7447| ZENOH[(zenoh-router<br/>rmw_zenohd)]
-  ZENOH --> RKO[rko-lio<br/>RKO-LIO odometry]
+  DRIVER -->|/livox/lidar /livox/imu<br/>Zenoh| RKO[rko-lio<br/>RKO-LIO odometry]
   RKO -->|/odom /tf /map| RVIZ[(RViz / Foxglove)]
 ```
 
-- **Zenoh RMW**: `RMW_IMPLEMENTATION=rmw_zenoh_cpp` on every container + router sidecar. Without the router nodes cannot discover each other (multicast disabled in node session config). Config at `docker/zenoh-config.json5`.
-- **Host networking**: Livox SDK2 opens server sockets on `host_net_info` ports; those must be reachable on the host subnet. Hence `network_mode: host` on Linux. See [docs/configuration.md](https://sattwik-sahu.github.io/livox-mid360_rko-lio_ros2/configuration/) for tuning.
-- **Multi-arch**: `docker buildx` with `linux/amd64,linux/arm64` → single manifest in GHCR (`docker pull` selects arch). Build locally: `docker buildx build --platform linux/amd64,linux/arm64 -f Dockerfile.livox --build-arg ROS_DISTRO=jazzy -t ghcr.io/sattwik-sahu/livox-mid360_rko-lio_ros2/livox-driver:jazzy .`
+- **Zenoh RMW**: Containers set `RMW_IMPLEMENTATION=rmw_zenoh_cpp` and connect to an **external** Zenoh router (your `pixi` project). No router is started by compose.
+- **Host networking**: Livox SDK2 opens server sockets on `host_net_info` ports; those must be reachable on the host subnet. Hence `network_mode: host` (now works on both Linux and macOS).
+- **Multi-arch**: `docker buildx` with `linux/amd64,linux/arm64` → single manifest in GHCR (`docker pull` selects arch). Build locally: `docker buildx build --platform linux/amd64,linux/arm64 -f docker/livox.Dockerfile --build-arg ROS_DISTRO=jazzy -t ghcr.io/sattwik-sahu/livox-mid360_rko-lio_ros2/livox-driver:jazzy .`
 
 ---
 
@@ -87,16 +89,30 @@ flowchart LR
 | File | Edit this when… |
 |------|-----------------|
 | `.env` | change `ROS_DISTRO`, `HOST_IP`, `LIDAR_IP`, `ROS_DOMAIN_ID` |
-| `config/MID360_config.json` | set `pcl_data_type` (1=32-bit Cartesian, 2=16-bit, 3=spherical), `pattern_mode` (0 non-repeating / 1 repeating), `extrinsic_parameter` (mount pose) |
-| `config/rko_lio_params.yaml` | voxel size, map range, topic remaps for RKO-LIO |
+| `config/livox/MID360_config.json` | set `pcl_data_type` (1=32-bit Cartesian, 2=16-bit, 3=spherical), `pattern_mode` (0 non-repeating / 1 repeating), `extrinsic_parameter` (mount pose) |
+| `config/rko_lio/params.yaml` | voxel size, map range, topic remaps for RKO-LIO |
 | `src/livox_ros/launch_ROS2/msg_MID360_launch.py` | `xfer_format` (0 PointCloud2 / 1 CustomMsg), `publish_freq`, `frame_id` |
-| `docker/zenoh-config.json5` | Zenoh scouting / listen endpoints |
 
 Full option reference: **[docs/configuration.md](https://sattwik-sahu.github.io/livox-mid360_rko-lio_ros2/configuration/)** and **[docs/tutorial.md](https://sattwik-sahu.github.io/livox-mid360_rko-lio_ros2/tutorial/)**.
 
 ---
 
-## Documentation — [https://sattwik-sahu.github.io/livox-mid360_rko-lio_ros2/](https://sattwik-sahu.github.io/livox-mid360_rko-lio_ros2/)
+## Documentation
+
+**Site:** [https://sattwik-sahu.github.io/livox-mid360_rko-lio_ros2/](https://sattwik-sahu.github.io/livox-mid360_rko-lio_ros2/)  •  **Layout:** `docker/` (images), `config/livox/` & `config/rko_lio/` (configs), `scripts/` (helpers), `ws/src/` (ROS sources if used), `docs/` (Jekyll)
+
+```
+repo/                         # docker-compose.yml at root (Docker convention)
+├─ docker/                    # Dockerfiles + entrypoints
+├─ config/
+│   ├─ livox/MID360_config.json
+│   └─ rko_lio/params.yaml
+├─ scripts/                   # setup_host_network.sh, check_zenoh.sh
+├─ src/ & sdk/                # ROS sources + vendor SDK (or ws/src/ layout)
+└─ docs/                      # Jekyll site
+```
+
+See “Dir tree” in docs for rationale.
 
 | Page | Link |
 |------|------|
@@ -128,9 +144,8 @@ Images are published by `.github/workflows/ci.yml` on every push to `main` and o
 
 ## Troubleshooting
 
-- `No data / ping fails` → run `sudo ./scripts/setup_host_network.sh eth0 && ping 192.168.1.12`; check `config/MID360_config.json` IPs match `HOST_IP`; allow `56000-56500/udp` in firewall.
-- `Nodes not discovering` → ensure `zenoh-router` is healthy: `docker compose logs zenoh-router`; verify `RMW_IMPLEMENTATION=rmw_zenoh_cpp` everywhere and `ROS_DOMAIN_ID` matches.
-- `macOS no host network` → use `docker-compose.mac.yml` overlay or switch to OrbStack/Colima.
+- `No data / ping fails` → run `sudo ./scripts/setup_host_network.sh eth0 && ping 192.168.1.12`; check `config/livox/MID360_config.json` IPs match `HOST_IP`; allow `56000-56500/udp` in firewall.
+- `Nodes not discovering` → ensure your external Zenoh router is running (`pixi run zenoh-router`); verify `RMW_IMPLEMENTATION=rmw_zenoh_cpp` and `ROS_DOMAIN_ID` match across host + containers.
 
 ---
 

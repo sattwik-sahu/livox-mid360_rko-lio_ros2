@@ -9,25 +9,19 @@ ENV DEBIAN_FRONTEND=noninteractive \
     RMW_IMPLEMENTATION=rmw_zenoh_cpp \
     ROS_DISTRO=${ROS_DISTRO}
 
-# System deps + Zenoh RMW
+# System deps (minimal — ROS deps come via rosdep, matching upstream Livox docs)
+# Upstream Livox SDK2 only needs cmake + gcc; livox_ros_driver2 deps are resolved via rosdep
 RUN apt-get update && apt-get install -y --no-install-recommends \
     cmake \
     build-essential \
     libpcl-dev \
     libapr1-dev \
     libaprutil1-dev \
-    ros-${ROS_DISTRO}-rmw-zenoh-cpp \
-    ros-${ROS_DISTRO}-pcl-conversions \
-    ros-${ROS_DISTRO}-pcl-ros \
-    ros-${ROS_DISTRO}-ament-cmake-auto \
-    ros-${ROS_DISTRO}-rosidl-default-generators \
-    ros-${ROS_DISTRO}-rclcpp-components \
-    ros-${ROS_DISTRO}-sensor-msgs \
-    ros-${ROS_DISTRO}-std-msgs \
-    ros-${ROS_DISTRO}-geometry-msgs \
     python3-colcon-common-extensions \
     python3-rosdep \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+ && (apt-get update && apt-get install -y --no-install-recommends ros-${ROS_DISTRO}-rmw-zenoh-cpp || echo "rmw_zenoh not available for ${ROS_DISTRO}, relying on DDS or manual install") \
+ && rm -rf /var/lib/apt/lists/*
 
 # --- Build Livox SDK2 ---
 COPY sdk/livox_sdk /tmp/livox_sdk

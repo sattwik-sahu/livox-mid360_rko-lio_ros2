@@ -1,28 +1,10 @@
 name: livox-rko
 
 services:
-  zenoh-router:
-    image: ros:${ROS_DISTRO:-jazzy}-ros-base
-    container_name: zenoh-router
-    network_mode: host
-    environment:
-      - ROS_DISTRO=${ROS_DISTRO:-jazzy}
-      - RMW_IMPLEMENTATION=rmw_zenoh_cpp
-      - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}
-    volumes:
-      - ./docker/zenoh-config.json5:/etc/zenoh/zenoh-config.json5:ro
-    command: bash -c "apt-get update && apt-get install -y ros-$${ROS_DISTRO}-rmw-zenoh-cpp && ros2 run rmw_zenoh_cpp rmw_zenohd --config /etc/zenoh/zenoh-config.json5"
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "ros2 node list | grep -q rmw_zenohd || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
   livox-driver:
     build:
       context: .
-      dockerfile: Dockerfile.livox
+      dockerfile: docker/livox.Dockerfile
       args:
         ROS_DISTRO: ${ROS_DISTRO:-jazzy}
     image: ghcr.io/sattwik-sahu/livox-mid360_rko-lio_ros2/livox-driver:${ROS_DISTRO:-jazzy}
@@ -36,11 +18,8 @@ services:
       - HOST_IP=${HOST_IP:-192.168.1.5}
       - LIDAR_IP=${LIDAR_IP:-192.168.1.12}
     volumes:
-      - ./config/MID360_config.json:/ws/src/livox_ros/config/MID360_config.json:ro
+      - ./config/livox/MID360_config.json:/ws/src/livox_ros/config/MID360_config.json:ro
     command: ros2 launch livox_ros_driver2 msg_MID360_launch.py
-    depends_on:
-      zenoh-router:
-        condition: service_started
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "ros2 topic list | grep -q livox || exit 1"]
@@ -52,7 +31,7 @@ services:
   rko-lio:
     build:
       context: .
-      dockerfile: Dockerfile.rko-lio
+      dockerfile: docker/rko_lio.Dockerfile
       args:
         ROS_DISTRO: ${ROS_DISTRO:-jazzy}
     image: ghcr.io/sattwik-sahu/livox-mid360_rko-lio_ros2/rko-lio:${ROS_DISTRO:-jazzy}
@@ -62,13 +41,10 @@ services:
       - ROS_DISTRO=${ROS_DISTRO:-jazzy}
       - RMW_IMPLEMENTATION=rmw_zenoh_cpp
       - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}
-      - WAIT_FOR_LIDAR=1
     volumes:
-      - ./config/rko_lio_params.yaml:/ws/config/rko_lio_params.yaml:ro
+      - ./config/rko_lio/params.yaml:/ws/config/rko_lio/params.yaml:ro
     command: ros2 launch rko_lio odometry.launch.py
     depends_on:
       livox-driver:
         condition: service_healthy
-      zenoh-router:
-        condition: service_started
     restart: unless-stopped

@@ -29,16 +29,16 @@ Dockerized autonomy stack for the **Livox Mid360** — driver + LiDAR-inertial o
 ```mermaid
 flowchart LR
   LIDAR[(Livox Mid360<br/>192.168.1.12)] -->|UDP 56xxx| DRIVER[livox-driver<br/>livox_ros_driver2]
-  DRIVER -->|/livox/lidar /livox/imu| ZENOH[(zenoh-router<br/>rmw_zenohd)]
-  ZENOH --> RKO[rko-lio]
+  DRIVER -->|/livox/lidar /livox/imu<br/>Zenoh| RKO[rko-lio]
   RKO -->|/odom /tf /map| VIZ[(RViz / Foxglove)]
 ```
 
 | Service | Image | Publishes / Subscribes |
 |---------|-------|------------------------|
-| `zenoh-router` | `ros:{distro}-ros-base` | `rmw_zenohd` on `tcp/7447` |
 | `livox-driver` | `ghcr.io/sattwik-sahu/livox-mid360_rko-lio_ros2/livox-driver:{distro}` | `/livox/lidar` (`PointCloud2` or `CustomMsg`), `/livox/imu` |
 | `rko-lio` | `ghcr.io/sattwik-sahu/livox-mid360_rko-lio_ros2/rko-lio:{distro}` | subscribes lidar+imu, publishes `/odom`, `/tf` |
+
+> **Zenoh:** An external Zenoh router (your `pixi` project) is expected — e.g. `pixi run zenoh-router`. Containers just set `RMW_IMPLEMENTATION=rmw_zenoh_cpp`.
 
 ## Choose your path
 

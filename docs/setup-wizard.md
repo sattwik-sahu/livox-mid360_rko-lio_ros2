@@ -25,7 +25,7 @@ Pick your **OS**, **architecture**, and **ROS 2 distro** — commands below upda
     </label>
     <label>ROS 2 Distro
       <select id="distro" style="width:100%; padding:6px; margin-top:4px">
-        <option value="jazzy">jazzy (LTS, recommended)</option>
+        <option value="jazzy">jazzy (LTS)</option>
         <option value="kilted">kilted</option>
         <option value="lyrical">lyrical</option>
       </select>
@@ -74,18 +74,16 @@ Pick your **OS**, **architecture**, and **ROS 2 distro** — commands below upda
     const os = els.os.value, arch = els.arch.value, distro = els.distro.value;
     const iface = els.iface.value.trim()||'eth0', hostip=els.hostip.value.trim()||'192.168.1.5', lidarip=els.lidarip.value.trim()||'192.168.1.12';
     const isMac = os==='mac';
-    const composeFile = isMac ? 'docker compose -f docker-compose.yml -f docker-compose.mac.yml' : 'docker compose';
+    const composeFile = 'docker compose';
     // warnings
     let w=''; let bg='#fff3cd', border='#ffe69c', color='#664d03';
-    if(isMac){
-      w = '<strong>macOS note:</strong> Docker Desktop has no <code>host</code> networking. This wizard uses <code>docker-compose.mac.yml</code> (bridge + explicit UDP ports). Multicast discovery (56000) is best-effort — prefer <a href="https://orbstack.dev">OrbStack</a> or <a href="https://github.com/abiosoft/colima">Colima</a> with host networking for reliable operation.';
-    } else if(arch==='arm64'){
-      w = 'You selected <strong>Linux arm64</strong> — images are multi-arch, <code>docker pull</code> selects the correct variant automatically. Build with <code>buildx</code> if cross-compiling.';
+    if(arch==='arm64'){
+      w = 'You selected <strong>arm64</strong> — images are multi-arch, <code>docker pull</code> selects the correct variant automatically. Build with <code>buildx</code> if cross-compiling.';
     }
     if(w){ els.warn.innerHTML=w; els.warn.style.display='block'; els.warn.style.background=bg; els.warn.style.border='1px solid '+border; els.warn.style.color=color; } else { els.warn.style.display='none'; }
 
     out.s1.textContent = isMac
-      ? '# macOS — install Docker Desktop (or OrbStack) + git\n# https://docs.docker.com/desktop/setup/install/mac-install/  or  brew install --cask orbstack\nbrew install git  # if needed\ndocker --version && docker compose version'
+      ? '# macOS — install Docker Desktop + git\n# https://docs.docker.com/desktop/setup/install/mac-install/\nbrew install git  # if needed\ndocker --version && docker compose version'
       : '# Ubuntu — Docker Engine + Compose v2\nsudo apt-get update && sudo apt-get install -y docker.io docker-compose-plugin git\nsudo usermod -aG docker $USER  # re-login after\ndocker --version && docker compose version';
 
     out.s2.textContent =
@@ -100,7 +98,7 @@ printf "ROS_DISTRO=${distro}\\nHOST_IP=${hostip}\\nLIDAR_IP=${lidarip}\\nROS_DOM
 cat .env`;
 
     out.s3.textContent = isMac
-      ? `# macOS: set static IP via System Settings → Network → Ethernet → Details → TCP/IP → Manual\n# IP: ${hostip}  Netmask: 255.255.255.0  (leave Router empty)\n# Verify LiDAR reachable:\nping -c 3 ${lidarip}\n# If using OrbStack/Colima with host networking, you can also run the Linux helper:\n# sudo ./scripts/setup_host_network.sh ${iface} ${hostip} ${lidarip}`
+      ? `# macOS: set static IP via System Settings → Network → Ethernet → Details → TCP/IP → Manual\n# IP: ${hostip}  Netmask: 255.255.255.0  (leave Router empty)\n# Verify LiDAR reachable:\nping -c 3 ${lidarip}`
       : `sudo ./scripts/setup_host_network.sh ${iface} ${hostip} ${lidarip}
 ping -c 3 ${lidarip}
 ip addr show ${iface} | grep ${hostip}`;
@@ -108,16 +106,16 @@ ip addr show ${iface} | grep ${hostip}`;
     const ghcrLivox = `ghcr.io/sattwik-sahu/livox-mid360_rko-lio_ros2/livox-driver:${distro}`;
     const ghcrRko   = `ghcr.io/sattwik-sahu/livox-mid360_rko-lio_ros2/rko-lio:${distro}`;
     out.s4.textContent =
-`# Option A — prebuilt multi-arch from GHCR (recommended, ~30s)
+`# Prebuilt multi-arch from GHCR
 docker pull ${ghcrLivox}
 docker pull ${ghcrRko}
 # (compose will also pull automatically)
 ${composeFile} pull
 
-# Option B — build locally (multi-arch manifest)
+# Or build locally (multi-arch manifest)
 # docker buildx create --use   # first time only
-# docker buildx build --platform linux/${arch} -f Dockerfile.livox --build-arg ROS_DISTRO=${distro} -t ${ghcrLivox} --load .
-# docker buildx build --platform linux/${arch} -f Dockerfile.rko-lio --build-arg ROS_DISTRO=${distro} -t ${ghcrRko} --load .
+# docker buildx build --platform linux/${arch} -f docker/livox.Dockerfile --build-arg ROS_DISTRO=${distro} -t ${ghcrLivox} --load .
+# docker buildx build --platform linux/${arch} -f docker/rko_lio.Dockerfile --build-arg ROS_DISTRO=${distro} -t ${ghcrRko} --load .
 ${composeFile} build`;
 
     out.s5.textContent =

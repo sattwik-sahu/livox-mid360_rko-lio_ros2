@@ -37,8 +37,8 @@ RUN apt-get update \
      && colcon build --packages-select rko_lio --cmake-args -DRKO_LIO_FETCH_CONTENT_DEPS=ON -DCMAKE_BUILD_TYPE=Release \
      && rm -rf /var/lib/apt/lists/*)
 
-# Copy optional local overrides (params, launch)
-COPY config/rko_lio_params.yaml /ws/config/rko_lio_params.yaml
+# Copy optional local overrides (params, launch) — upstream rko_lio uses `ros2 launch rko_lio odometry.launch.py` autodetect by default, config_file is optional
+COPY config/rko_lio/params.yaml /ws/config/rko_lio/params.yaml
 
 COPY docker/entrypoint-rko.sh /entrypoint-rko.sh
 RUN chmod +x /entrypoint-rko.sh

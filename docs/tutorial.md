@@ -33,20 +33,18 @@ sudo ufw allow 56100:56500/udp   # if ufw active
 **macOS**
 
 1. System Settings → Network → Ethernet → Details → TCP/IP → Configure IPv4 **Manually**, `192.168.1.5 / 255.255.255.0`.
-2. Docker Desktop **cannot** do `network_mode: host` — compose ships `docker-compose.mac.yml` (bridge + `ports: 56100:56100/udp ... 56501`). Multicast `56000` broadcast is best-effort on bridge. For production use **OrbStack** (`brew install --cask orbstack`) or **Colima** with `--network-address`.
+2. Both Linux and macOS use `network_mode: host` — Docker on macOS now supports `--net host`. No extra `docker-compose.mac.yml` overlay is needed. Just run `docker compose up -d` on either OS.
 
 {: .warning }
 > If `ping` fails, nothing else will work. Check cable, power LED, and `ip addr` — not Docker.
 
 ## 3. Zenoh RMW
 
-ROS 2 default was DDS (Fast/Cyclone). This stack uses **Zenoh** (`rmw_zenoh_cpp`) — lower overhead, simpler discovery via a router.
+This stack uses **Zenoh** (`rmw_zenoh_cpp`). A Zenoh router is started **outside** this compose — e.g. via your `pixi` project (`pixi run zenoh-router` or `ros2 run rmw_zenoh_cpp rmw_zenohd`).
 
-- Every container sets `RMW_IMPLEMENTATION=rmw_zenoh_cpp` and `ROS_DOMAIN_ID` (same value).
-- Compose starts `zenoh-router` (`ros2 run rmw_zenoh_cpp rmw_zenohd --config /etc/zenoh/zenoh-config.json5`). Without it nodes are isolated (node session multicast is disabled).
-- Verify: `./scripts/check_zenoh.sh` → `ros2 node list` should show `rmw_zenohd`.
-
-Config at `docker/zenoh-config.json5` — scouting `multicast 224.0.0.224:7446` + gossip. Only change if you need custom endpoints.
+- Every container just sets `RMW_IMPLEMENTATION=rmw_zenoh_cpp` and `ROS_DOMAIN_ID` (same value) and connects to the external router. No extra Docker networking is needed.
+- Start the router **before** `docker compose up` and verify `ros2 node list` shows it.
+- Keep `RMW_IMPLEMENTATION` consistent across host, `livox-driver`, and `rko-lio`.
 
 ## 4. Build vs pull
 
@@ -60,7 +58,7 @@ ROS_DISTRO=kilted docker compose build
 ROS_DISTRO=kilted docker compose up -d
 ```
 
-Multi-platform push (maintainer): `docker buildx build --platform linux/amd64,linux/arm64 -f Dockerfile.livox --build-arg ROS_DISTRO=jazzy -t ghcr.io/.../livox-driver:jazzy --push .`
+Multi-platform push (maintainer): `docker buildx build --platform linux/amd64,linux/arm64 -f docker/livox.Dockerfile --build-arg ROS_DISTRO=jazzy -t ghcr.io/.../livox-driver:jazzy --push .`
 
 ## 5. Running
 
@@ -73,7 +71,7 @@ docker compose exec livox-driver ros2 topic list
 docker compose exec livox-driver ros2 topic hz /livox/lidar   # ~10 Hz
 ```
 
-RKO-LIO autodetects `lidar_topic`/`imu_topic` and frames; override via `config/rko_lio_params.yaml`.
+RKO-LIO autodetects `lidar_topic`/`imu_topic` and frames; override via `config/rko_lio/params.yaml`.
 
 ## 6. Recording
 
@@ -88,9 +86,8 @@ RMW_IMPLEMENTATION=rmw_zenoh_cpp ROS_DOMAIN_ID=0 ros2 bag record /livox/lidar /l
 | Symptom | Fix |
 |---------|-----|
 | `ping` fails | Re-run `setup_host_network.sh`, check subnet, cable, firewall |
-| Driver starts but no points | IPs mismatch in `config/MID360_config.json` vs `.env`; `HOST_IP` must equal `ip addr` value |
-| `ros2 topic list` empty across containers | `zenoh-router` not running or `ROS_DOMAIN_ID` mismatch; `docker compose logs zenoh-router` |
+| Driver starts but no points | IPs mismatch in `config/livox/MID360_config.json` vs `.env`; `HOST_IP` must equal `ip addr` value |
+| `ros2 topic list` empty across containers | Zenoh router not running (start your `pixi` Zenoh router) or `ROS_DOMAIN_ID` mismatch |
 | `rviz` no display | Need `xhost +local:docker` + `DISPLAY`/`XAUTHORITY` mounts; or use Foxglove `ros2 bag` playback |
-| macOS no data on bridge | Switch to OrbStack/Colima host networking; ensure `docker-compose.mac.yml` ports match `MID360_config.json` |
 
 Next: [Configuration →](../configuration/) for every tunable.

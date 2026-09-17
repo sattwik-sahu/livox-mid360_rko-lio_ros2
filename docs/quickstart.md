@@ -28,7 +28,7 @@ nano .env
 
 Find your LiDAR IP on the device label or via Livox Viewer 2. Host IP must be same `/24` subnet (e.g. LiDAR `192.168.1.12` → host `192.168.1.5`).
 
-## 2. Host network (Linux)
+## 2. Host network
 
 ```bash
 # eth0 / enp0s31f6 — replace with your NIC name (ip addr)
@@ -36,7 +36,7 @@ sudo ./scripts/setup_host_network.sh eth0 192.168.1.5 192.168.1.12
 ping 192.168.1.12   # must succeed before continuing
 ```
 
-macOS: set static IP in **System Settings → Network → Ethernet → Details → TCP/IP → Manual** (`192.168.1.5/255.255.255.0`), then use the `docker-compose.mac.yml` overlay (see Tutorial).
+macOS: set static IP in **System Settings → Network → Ethernet → Details → TCP/IP → Manual** (`192.168.1.5/255.255.255.0`). Both Linux and macOS use `network_mode: host` (`docker compose up -d` works on both).
 
 ## 3. Launch
 

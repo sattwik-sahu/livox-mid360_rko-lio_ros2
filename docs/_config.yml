@@ -1,5 +1,5 @@
-title: Livox Mid360 + RKO-LIO ROS2
-description: Dockerized Livox Mid360 driver + RKO-LIO odometry on ROS 2 Jazzy/Kilted/Lyrical with Zenoh — Linux & macOS (arm64)
+title: Livox LIO
+description: Livox Mid360 + RKO-LIO on ROS 2 Jazzy/Kilted/Lyrical with Zenoh — Linux & macOS (arm64)
 remote_theme: just-the-docs/just-the-docs
 url: "https://sattwik-sahu.github.io"
 baseurl: "/livox-mid360_rko-lio_ros2"
@@ -26,7 +26,7 @@ callouts:
     color: red
 
 # Theme settings
-color_scheme: dark
+color_scheme: light
 search_enabled: true
 heading_anchors: true
 
