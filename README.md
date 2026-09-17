@@ -1,5 +1,9 @@
 # Livox Mid360 + RKO-LIO — ROS2 Docker (Jazzy / Kilted / Lyrical) · Zenoh
 
+<p align="center">
+  <img src="docs/rko-lio-banner.png" alt="Livox Mid360 + RKO-LIO — banner showing odometry in four environments" width="100%" />
+</p>
+
 [![Docs](https://github.com/sattwik-sahu/livox-mid360_rko-lio_ros2/actions/workflows/docs.yml/badge.svg)](https://sattwik-sahu.github.io/livox-mid360_rko-lio_ros2/)
 [![ROS2](https://img.shields.io/badge/ROS2-jazzy%20%7C%20kilted%20%7C%20lyrical-green)](https://docs.ros.org)
 [![RMW](https://img.shields.io/badge/RMW-zenoh-orange)](https://docs.ros.org/en/kilted/Installation/RMW-Implementations/Non-DDS-Implementations/Working-with-Zenoh.html)

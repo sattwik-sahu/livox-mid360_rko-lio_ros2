@@ -6,6 +6,8 @@ description: Livox Mid360 + RKO-LIO ROS2 Docker — Jazzy/Kilted/Lyrical, Zenoh,
 permalink: /
 ---
 
+![Livox LIO banner](rko-lio-banner.png)
+
 # Livox Mid360 + RKO-LIO on ROS 2
 
 {: .fs-6 .fw-300 }
