@@ -9,9 +9,9 @@
 
 | Distro | CI | Base | Status |
 |--------|----|------|--------|
-| **jazzy** | [![CI — jazzy](https://github.com/sattwik-sahu/livox-mid360_rko-lio_ros2/actions/workflows/ci.yml/badge.svg?branch=main&event=push)](https://github.com/sattwik-sahu/livox-mid360_rko-lio_ros2/actions/workflows/ci.yml) | `ros:jazzy-ros-base` (Noble) | ✅ passing (verified locally) |
-| **kilted** | [![CI — kilted](https://github.com/sattwik-sahu/livox-mid360_rko-lio_ros2/actions/workflows/ci.yml/badge.svg?branch=main&event=push)](https://github.com/sattwik-sahu/livox-mid360_rko-lio_ros2/actions/workflows/ci.yml) | `ros:kilted-ros-base` (Noble) | ✅ fixed — `rosidl_get_typesupport_target` now distro-agnostic (`if(COMMAND ...)`) |
-| **lyrical** | [![CI — lyrical](https://github.com/sattwik-sahu/livox-mid360_rko-lio_ros2/actions/workflows/ci.yml/badge.svg?branch=main&event=push)](https://github.com/sattwik-sahu/livox-mid360_rko-lio_ros2/actions/workflows/ci.yml) | `ros:lyrical-ros-base` (Resolute) | 🚧 experimental — `CMake 4.2` needs `-DCMAKE_POLICY_VERSION_MINIMUM=3.5` (handled in Dockerfile, vendor `CMakeLists.txt:3.14` left for later) |
+| **jazzy** | [![CI — jazzy](https://github.com/sattwik-sahu/livox-mid360_rko-lio_ros2/actions/workflows/ci.yml/badge.svg?branch=main&event=push)](https://github.com/sattwik-sahu/livox-mid360_rko-lio_ros2/actions/workflows/ci.yml) | `ros:jazzy-ros-base` (Noble) | ✅ |
+| **kilted** | [![CI — kilted](https://github.com/sattwik-sahu/livox-mid360_rko-lio_ros2/actions/workflows/ci.yml/badge.svg?branch=main&event=push)](https://github.com/sattwik-sahu/livox-mid360_rko-lio_ros2/actions/workflows/ci.yml) | `ros:kilted-ros-base` (Noble) | ✅ |
+| **lyrical** | [![CI — lyrical](https://github.com/sattwik-sahu/livox-mid360_rko-lio_ros2/actions/workflows/ci.yml/badge.svg?branch=main&event=push)](https://github.com/sattwik-sahu/livox-mid360_rko-lio_ros2/actions/workflows/ci.yml) | `ros:lyrical-ros-base` (Resolute) | 🚧  |
 
 > **Note:** CI is a single `ci.yml` matrix (`linux/amd64,arm64` via QEMU). Badges above share the same workflow status but are shown per-distro for clarity. `lyrical` is allowed to be experimental until the vendor `cmake_minimum_required` bump is upstreamed.
 
