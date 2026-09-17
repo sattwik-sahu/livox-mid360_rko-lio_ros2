@@ -5,7 +5,9 @@ url: "https://sattwik-sahu.github.io"
 baseurl: "/livox-mid360_rko-lio_ros2"
 aux_links:
   "GitHub": "https://github.com/sattwik-sahu/livox-mid360_rko-lio_ros2"
-  "GHCR": "https://github.com/sattwik-sahu/livox-mid360_rko-lio_ros2/pkgs/container/livox-mid360_rko-lio_ros2%2Flivox-driver"
+  "GHCR Livox": "https://github.com/sattwik-sahu/livox-mid360_rko-lio_ros2/pkgs/container/livox-mid360_rko-lio_ros2%2Flivox-driver"
+  "GHCR RKO-LIO": "https://github.com/sattwik-sahu/livox-mid360_rko-lio_ros2/pkgs/container/livox-mid360_rko-lio_ros2%2Frko-lio"
+
 callouts:
   highlight:
     title: Highlight
@@ -23,19 +25,26 @@ callouts:
     title: Warning
     color: red
 
-# Enable search and mermaid
+# Theme settings
+color_scheme: dark
 search_enabled: true
+heading_anchors: true
+
+# Mermaid diagrams
 mermaid:
   version: "10.9.0"
 
 plugins:
+  - jekyll-remote-theme
   - jekyll-seo-tag
   - jekyll-sitemap
   - jekyll-include-cache
+  - jekyll-feed
 
-footer_content: "MIT License · <a href=\"https://github.com/sattwik-sahu/livox-mid360_rko-lio_ros2\">GitHub</a> · <a href=\"https://github.com/sattwik-sahu/livox-mid360_rko-lio_ros2/pkgs/container/livox-mid360_rko-lio_ros2%2Flivox-driver\">GHCR</a>"
+footer_content: "MIT License · <a href=\"https://github.com/sattwik-sahu/livox-mid360_rko-lio_ros2\">GitHub</a> · <a href=\"https://github.com/sattwik-sahu/livox-mid360_rko-lio_ros2/pkgs/container/livox-mid360_rko-lio_ros2%2Flivox-driver\">GHCR livox-driver</a> · <a href=\"https://github.com/sattwik-sahu/livox-mid360_rko-lio_ros2/pkgs/container/livox-mid360_rko-lio_ros2%2Frko-lio\">GHCR rko-lio</a>"
 
 exclude:
   - Gemfile
   - Gemfile.lock
   - vendor
+  - .bundle

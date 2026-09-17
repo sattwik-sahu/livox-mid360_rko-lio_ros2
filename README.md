@@ -1,14 +1,19 @@
 # Livox Mid360 + RKO-LIO — ROS2 Docker (Jazzy / Kilted / Lyrical) · Zenoh
 
 [![CI](https://github.com/sattwik-sahu/livox-mid360_rko-lio_ros2/actions/workflows/ci.yml/badge.svg)](https://github.com/sattwik-sahu/livox-mid360_rko-lio_ros2/actions/workflows/ci.yml)
-[![Docs](https://github.com/sattwik-sahu/livox-mid360_rko-lio_ros2/actions/workflows/docs.yml/badge.svg)](https://github.com/sattwik-sahu/livox-mid360_rko-lio_ros2/actions/workflows/docs.yml)
-[![GHCR livox-driver](https://img.shields.io/badge/ghcr-livox--driver-blue?logo=docker)](https://github.com/sattwik-sahu/livox-mid360_rko-lio_ros2/pkgs/container/livox-mid360_rko-lio_ros2%2Flivox-driver)
-[![GHCR rko-lio](https://img.shields.io/badge/ghcr-rko--lio-blue?logo=docker)](https://github.com/sattwik-sahu/livox-mid360_rko-lio_ros2/pkgs/container/livox-mid360_rko-lio_ros2%2Frko-lio)
+[![Docs](https://github.com/sattwik-sahu/livox-mid360_rko-lio_ros2/actions/workflows/docs.yml/badge.svg)](https://sattwik-sahu.github.io/livox-mid360_rko-lio_ros2/)
 [![ROS2](https://img.shields.io/badge/ROS2-jazzy%20%7C%20kilted%20%7C%20lyrical-green)](https://docs.ros.org)
 [![RMW](https://img.shields.io/badge/RMW-zenoh-orange)](https://docs.ros.org/en/kilted/Installation/RMW-Implementations/Non-DDS-Implementations/Working-with-Zenoh.html)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-> **Documentation site:** https://sattwik-sahu.github.io/livox-mid360_rko-lio_ros2/ — includes an **interactive Setup Wizard** (pick OS / Arch / ROS distro → commands auto-update).
+| Image | `jazzy` | `kilted` | `lyrical` |
+|-------|---------|----------|-----------|
+| `livox-driver` | [![GHCR livox jazzy](https://img.shields.io/badge/ghcr-livox--driver%3Ajazzy-blue?logo=docker)](https://github.com/sattwik-sahu/livox-mid360_rko-lio_ros2/pkgs/container/livox-mid360_rko-lio_ros2%2Flivox-driver) | [![GHCR livox kilted](https://img.shields.io/badge/ghcr-livox--driver%3Akilted-blue?logo=docker)](https://github.com/sattwik-sahu/livox-mid360_rko-lio_ros2/pkgs/container/livox-mid360_rko-lio_ros2%2Flivox-driver) | [![GHCR livox lyrical](https://img.shields.io/badge/ghcr-livox--driver%3Alyrical-blue?logo=docker)](https://github.com/sattwik-sahu/livox-mid360_rko-lio_ros2/pkgs/container/livox-mid360_rko-lio_ros2%2Flivox-driver) |
+| `rko-lio` | [![GHCR rko jazzy](https://img.shields.io/badge/ghcr-rko--lio%3Ajazzy-blue?logo=docker)](https://github.com/sattwik-sahu/livox-mid360_rko-lio_ros2/pkgs/container/livox-mid360_rko-lio_ros2%2Frko-lio) | [![GHCR rko kilted](https://img.shields.io/badge/ghcr-rko--lio%3Akilted-blue?logo=docker)](https://github.com/sattwik-sahu/livox-mid360_rko-lio_ros2/pkgs/container/livox-mid360_rko-lio_ros2%2Frko-lio) | [![GHCR rko lyrical](https://img.shields.io/badge/ghcr-rko--lio%3Alyrical-blue?logo=docker)](https://github.com/sattwik-sahu/livox-mid360_rko-lio_ros2/pkgs/container/livox-mid360_rko-lio_ros2%2Frko-lio) |
+
+> **Builds:** All tags are multi-arch (`linux/amd64`, `linux/arm64`). Status of each `jazzy`/`kilted`/`lyrical` build is tracked by the **CI** workflow badge above (matrix: 6 image × distro jobs). Use the **Setup Wizard** below to pull the right tag.
+
+> **Documentation site:** **[https://sattwik-sahu.github.io/livox-mid360_rko-lio_ros2/](https://sattwik-sahu.github.io/livox-mid360_rko-lio_ros2/)** — includes an **interactive [Setup Wizard](https://sattwik-sahu.github.io/livox-mid360_rko-lio_ros2/setup-wizard/)** (pick OS / Arch / ROS distro → commands auto-update).
 
 Two-container ROS 2 stack for the **Livox Mid360** 3D lidar:
 
@@ -91,7 +96,7 @@ Full option reference: **[docs/configuration.md](https://sattwik-sahu.github.io/
 
 ---
 
-## Documentation
+## Documentation — [https://sattwik-sahu.github.io/livox-mid360_rko-lio_ros2/](https://sattwik-sahu.github.io/livox-mid360_rko-lio_ros2/)
 
 | Page | Link |
 |------|------|
@@ -101,7 +106,8 @@ Full option reference: **[docs/configuration.md](https://sattwik-sahu.github.io/
 | Configuration reference | [configuration](https://sattwik-sahu.github.io/livox-mid360_rko-lio_ros2/configuration/) |
 | References | [references](https://sattwik-sahu.github.io/livox-mid360_rko-lio_ros2/references/) |
 
-Local docs: `bundle install && bundle exec jekyll serve` inside `docs/` → http://localhost:4000/livox-mid360_rko-lio_ros2/
+Local docs: `cd docs && bundle install && bundle exec jekyll serve` → http://localhost:4000/livox-mid360_rko-lio_ros2/  
+Pages build: `.github/workflows/docs.yml` → GitHub Pages (workflow `deploy` env `github-pages`).
 
 ---
 
