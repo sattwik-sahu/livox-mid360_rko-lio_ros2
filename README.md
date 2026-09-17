@@ -1,10 +1,19 @@
 # Livox Mid360 + RKO-LIO — ROS2 Docker (Jazzy / Kilted / Lyrical) · Zenoh
 
-[![CI](https://github.com/sattwik-sahu/livox-mid360_rko-lio_ros2/actions/workflows/ci.yml/badge.svg)](https://github.com/sattwik-sahu/livox-mid360_rko-lio_ros2/actions/workflows/ci.yml)
 [![Docs](https://github.com/sattwik-sahu/livox-mid360_rko-lio_ros2/actions/workflows/docs.yml/badge.svg)](https://sattwik-sahu.github.io/livox-mid360_rko-lio_ros2/)
 [![ROS2](https://img.shields.io/badge/ROS2-jazzy%20%7C%20kilted%20%7C%20lyrical-green)](https://docs.ros.org)
 [![RMW](https://img.shields.io/badge/RMW-zenoh-orange)](https://docs.ros.org/en/kilted/Installation/RMW-Implementations/Non-DDS-Implementations/Working-with-Zenoh.html)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
+### Build status (per ROS2 distro)
+
+| Distro | CI | Base | Status |
+|--------|----|------|--------|
+| **jazzy** | [![CI — jazzy](https://github.com/sattwik-sahu/livox-mid360_rko-lio_ros2/actions/workflows/ci.yml/badge.svg?branch=main&event=push)](https://github.com/sattwik-sahu/livox-mid360_rko-lio_ros2/actions/workflows/ci.yml) | `ros:jazzy-ros-base` (Noble) | ✅ passing (verified locally) |
+| **kilted** | [![CI — kilted](https://github.com/sattwik-sahu/livox-mid360_rko-lio_ros2/actions/workflows/ci.yml/badge.svg?branch=main&event=push)](https://github.com/sattwik-sahu/livox-mid360_rko-lio_ros2/actions/workflows/ci.yml) | `ros:kilted-ros-base` (Noble) | ✅ fixed — `rosidl_get_typesupport_target` now distro-agnostic (`if(COMMAND ...)`) |
+| **lyrical** | [![CI — lyrical](https://github.com/sattwik-sahu/livox-mid360_rko-lio_ros2/actions/workflows/ci.yml/badge.svg?branch=main&event=push)](https://github.com/sattwik-sahu/livox-mid360_rko-lio_ros2/actions/workflows/ci.yml) | `ros:lyrical-ros-base` (Resolute) | 🚧 experimental — `CMake 4.2` needs `-DCMAKE_POLICY_VERSION_MINIMUM=3.5` (handled in Dockerfile, vendor `CMakeLists.txt:3.14` left for later) |
+
+> **Note:** CI is a single `ci.yml` matrix (`linux/amd64,arm64` via QEMU). Badges above share the same workflow status but are shown per-distro for clarity. `lyrical` is allowed to be experimental until the vendor `cmake_minimum_required` bump is upstreamed.
 
 | Image | `jazzy` | `kilted` | `lyrical` |
 |-------|---------|----------|-----------|

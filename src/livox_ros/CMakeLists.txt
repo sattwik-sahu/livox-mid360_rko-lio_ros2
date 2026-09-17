@@ -282,10 +282,14 @@ else(ROS_EDITION STREQUAL "ROS2")
   target_include_directories(${PROJECT_NAME} PRIVATE ${livox_sdk_INCLUDE_DIRS})
 
   # get include directories of custom msg headers
-  if(DISTRO_ROS STREQUAL "humble" OR DISTRO_ROS STREQUAL "jazzy")
+  # Use modern rosidl_get_typesupport_target for all ROS2 distros >= humble (jazzy, kilted, lyrical)
+  # Fallback to legacy __rosidl_typesupport_cpp target only for foxy and older
+  if(COMMAND rosidl_get_typesupport_target)
     rosidl_get_typesupport_target(cpp_typesupport_target
     ${LIVOX_INTERFACES} "rosidl_typesupport_cpp")
     target_link_libraries(${PROJECT_NAME} "${cpp_typesupport_target}")
+    # Keep legacy variable for later link (empty for modern, used only by old branch below)
+    set(LIVOX_INTERFACE_TARGET "${cpp_typesupport_target}")
   else()
     set(LIVOX_INTERFACE_TARGET "${LIVOX_INTERFACES}__rosidl_typesupport_cpp")
     add_dependencies(${PROJECT_NAME} ${LIVOX_INTERFACES})
