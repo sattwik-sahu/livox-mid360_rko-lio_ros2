@@ -1,0 +1,8 @@
+# Development override — mount source for live editing
+# Auto-loaded by `docker compose up` if present. Remove if not needed.
+
+services:
+  livox-driver:
+    volumes:
+      - ./src/livox_ros:/ws/src/livox_ros:cached
+      - ./sdk/livox_sdk:/tmp/livox_sdk:cached

@@ -1,0 +1,10 @@
+.git
+.github
+docs
+_site
+README.md
+LICENSE
+.gitignore
+.env
+*.bag
+*.mcap

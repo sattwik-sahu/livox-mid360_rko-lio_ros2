@@ -1,0 +1,30 @@
+# RKO-LIO parameters — tune per platform
+# See https://github.com/PRBonn/rko_lio and docs/configuration.md
+# These values are passed to odometry.launch.py if the launch supports param file remapping.
+# If autodetect is used, this file is optional — topics/frames are guessed.
+
+rko_lio:
+  ros__parameters:
+    # Topics (leave empty for autodetect)
+    lidar_topic: "/livox/lidar"
+    imu_topic: "/livox/imu"
+
+    # Frames
+    base_frame: "base_link"
+    odom_frame: "odom"
+    map_frame: "map"
+
+    # Filtering / mapping
+    voxel_size: 0.3          # downsample leaf size (m) — larger = faster, less dense
+    max_range: 100.0         # ignore points beyond (m)
+    min_range: 0.3           # ignore points closer than (m)
+
+    # IMU / deskew
+    deskew: true
+    gravity: 9.81
+
+    # Publishing
+    publish_odom: true
+    publish_map: true
+    publish_tf: true
+    map_publish_period: 0.5   # s

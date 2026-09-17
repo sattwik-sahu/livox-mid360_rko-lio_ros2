@@ -1,0 +1,41 @@
+title: Livox Mid360 + RKO-LIO ROS2
+description: Dockerized Livox Mid360 driver + RKO-LIO odometry on ROS 2 Jazzy/Kilted/Lyrical with Zenoh — Linux & macOS (arm64)
+remote_theme: just-the-docs/just-the-docs
+url: "https://sattwik-sahu.github.io"
+baseurl: "/livox-mid360_rko-lio_ros2"
+aux_links:
+  "GitHub": "https://github.com/sattwik-sahu/livox-mid360_rko-lio_ros2"
+  "GHCR": "https://github.com/sattwik-sahu/livox-mid360_rko-lio_ros2/pkgs/container/livox-mid360_rko-lio_ros2%2Flivox-driver"
+callouts:
+  highlight:
+    title: Highlight
+    color: yellow
+  important:
+    title: Important
+    color: blue
+  new:
+    title: New
+    color: green
+  note:
+    title: Note
+    color: blue
+  warning:
+    title: Warning
+    color: red
+
+# Enable search and mermaid
+search_enabled: true
+mermaid:
+  version: "10.9.0"
+
+plugins:
+  - jekyll-seo-tag
+  - jekyll-sitemap
+  - jekyll-include-cache
+
+footer_content: "MIT License · <a href=\"https://github.com/sattwik-sahu/livox-mid360_rko-lio_ros2\">GitHub</a> · <a href=\"https://github.com/sattwik-sahu/livox-mid360_rko-lio_ros2/pkgs/container/livox-mid360_rko-lio_ros2%2Flivox-driver\">GHCR</a>"
+
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - vendor

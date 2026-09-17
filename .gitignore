@@ -1,0 +1,49 @@
+# ROS2 build artifacts
+build/
+install/
+log/
+src/CMakeLists.txt
+
+# Livox SDK build
+sdk/livox_sdk/build/
+
+# Env & secrets
+.env
+!.env.example
+
+# Jekyll
+docs/_site/
+docs/.jekyll-cache/
+docs/.jekyll-metadata
+docs/vendor/
+docs/Gemfile.lock
+_site/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Bags & logs
+*.bag
+*.mcap
+*.db3
+*.pcd
+*.lvx
+*.pcap
+logs/
+rosbags/
+
+# Docker
+.docker/
+
+# Python
+__pycache__/
+*.pyc
+.venv/

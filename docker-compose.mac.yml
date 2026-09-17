@@ -1,0 +1,39 @@
+# macOS Docker Desktop overlay — host networking is NOT supported.
+# Use this only when running on macOS: docker compose -f docker-compose.yml -f docker-compose.mac.yml up
+# You must still configure your Mac's Ethernet interface to 192.168.1.x and ensure the LiDAR is reachable.
+# Bridge mode exposes required UDP ports explicitly. Multicast discovery (port 56000) may be unreliable
+# on Docker Desktop — prefer OrbStack or Colima with host networking for reliable operation.
+
+services:
+  zenoh-router:
+    network_mode: bridge
+    ports:
+      - "7447:7447/tcp"
+      - "7447:7447/udp"
+      - "7446:7446/udp"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  livox-driver:
+    network_mode: bridge
+    ports:
+      - "56100:56100/udp"  # cmd
+      - "56101:56101/udp"  # host cmd
+      - "56200:56200/udp"  # push (lidar)
+      - "56201:56201/udp"  # host push
+      - "56300:56300/udp"  # pointcloud (lidar)
+      - "56301:56301/udp"  # host pointcloud
+      - "56400:56400/udp"  # imu (lidar)
+      - "56401:56401/udp"  # host imu
+      - "56500:56500/udp"
+      - "56501:56501/udp"
+      - "56000:56000/udp"  # broadcast discovery (best-effort on bridge)
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  rko-lio:
+    network_mode: bridge
+    ports:
+      - "7447:7447/tcp"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
