@@ -89,11 +89,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: hadolint/hadolint-action@v3
+      - uses: hadolint/hadolint-action@v3.1.0
         with:
           dockerfile: Dockerfile.livox
           failure-threshold: warning
-      - uses: hadolint/hadolint-action@v3
+      - uses: hadolint/hadolint-action@v3.1.0
         with:
           dockerfile: Dockerfile.rko-lio
           failure-threshold: warning
