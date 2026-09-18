@@ -27,8 +27,10 @@ jobs:
         include:
           - image: livox-driver
             dockerfile: docker/livox.Dockerfile
+            hub_suffix: driver
           - image: rko-lio
             dockerfile: docker/rko_lio.Dockerfile
+            hub_suffix: rko-lio
     steps:
       - uses: actions/checkout@v4
 
@@ -46,13 +48,31 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Docker meta
+      - name: Log in to Docker Hub
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Docker meta (GHCR)
         id: meta
         uses: docker/metadata-action@v5
         with:
           images: ghcr.io/${{ github.repository }}/${{ matrix.image }}
           tags: |
             type=raw,value=${{ matrix.ros_distro }}
+          flavor: |
+            latest=false
+
+      - name: Docker meta (Docker Hub)
+        id: meta_hub
+        if: github.event_name != 'pull_request'
+        uses: docker/metadata-action@v5
+        with:
+          images: sattwik21/livox-lidar
+          tags: |
+            type=raw,value=${{ matrix.ros_distro }}-${{ matrix.hub_suffix }}
           flavor: |
             latest=false
 
@@ -63,7 +83,9 @@ jobs:
           file: ${{ matrix.dockerfile }}
           platforms: linux/amd64,linux/arm64
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: |
+            ${{ steps.meta.outputs.tags }}
+            ${{ steps.meta_hub.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: ROS_DISTRO=${{ matrix.ros_distro }}
           cache-from: type=gha
